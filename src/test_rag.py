@@ -37,7 +37,7 @@ RED_F2_THRESHOLD = 4   # press F2 if ≥ this many red (class-6) blobs
 
 # quick paths
 TESS_PATH  = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-MODEL_PATH = "models/best_v12s.pt"
+MODEL_PATH = "models/best_v12n.pt"
 pytesseract.pytesseract.tesseract_cmd = TESS_PATH
 
 # ── BOT CONFIG (unchanged from v11) ───────────────────────────────────────
