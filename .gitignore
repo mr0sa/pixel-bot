@@ -1,3 +1,6 @@
 models/best.pt
 ragnarok-dataset-new
 runs
+captured_dataset
+ragnarok-dataset/images
+ragnarok-dataset/labels

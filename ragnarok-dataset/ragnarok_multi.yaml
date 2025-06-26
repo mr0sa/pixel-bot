@@ -1,9 +1,15 @@
 # ragnarok_multi.yaml
 path: .
-train: images/train
-val: images/val
+train: ragnarok-dataset/images/train
+val: ragnarok-dataset/images/val
 names:
-  0: baphomet
-  1: cards
-  2: fly
+  0: blue
+  1: cyan
+  2: green
+  3: orange
+  4: pink
+  5: purple
+  6: red
+  7: yellow
+
 
