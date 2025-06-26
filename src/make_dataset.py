@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import Image
 
 OUT_W, OUT_H = 1280, 720
-N_IMAGES = 200     # total
+N_IMAGES = 300     # total
 TRAIN_SPLIT = 1
 
 random.seed(42)
@@ -36,7 +36,7 @@ for idx in range(N_IMAGES):
     img, (cx, cy, w, h) = place_sprite(bg, sp)
 
     split = "train" if random.random() < TRAIN_SPLIT else "val"
-    img_name = f"synt_{idx:05}.jpg"
+    img_name = f"pink_reinf_{idx:05}.jpg"
     lbl_name = img_name.replace(".jpg", ".txt")
     ind = 4
     img.save(f"../ragnarok-dataset/images/{split}/{img_name}", quality=90)
