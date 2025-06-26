@@ -37,12 +37,12 @@ RED_F2_THRESHOLD = 4   # press F2 if ≥ this many red (class-6) blobs
 
 # quick paths
 TESS_PATH  = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-MODEL_PATH = "models/best_v12n.pt"
+MODEL_PATH = "models/best_v12n2.pt"
 pytesseract.pytesseract.tesseract_cmd = TESS_PATH
 
 # ── BOT CONFIG (unchanged from v11) ───────────────────────────────────────
 IMG_SZ = 416 
-FRAME_SKIP = 2
+FRAME_SKIP = 1
 CONF_THRES = 0.70 
 IOU_THRES = 0.50
 JITTER_PX  = 4
@@ -66,7 +66,7 @@ CAPTURE_DIR = Path("captured_dataset")
 for sub in ("images","labels","preview",
             "cards/images","cards/preview","cards/labels"):
     (CAPTURE_DIR/sub).mkdir(parents=True, exist_ok=True)
-CAPTURE_EVERY = 5.0        # seconds
+CAPTURE_EVERY = 3.0        # seconds
 # ──────────────────────────────────────────────────────────────────────────
 
 # ═════════ interception helpers ══════════════════════════════════════════
@@ -230,6 +230,28 @@ def main():
                     save_sample(frame.copy(), [(4,box)], folder="cards")
 
                 # ---- attacks ----------------------------------------
+                # ---- SP critical: ONLY simple click (no F3) ----------
+                elif sp_crit and atks and not sitting:
+                    # choose best target (nearest-strongest same as below)
+                    if len(atks) > 1:
+                        def score_sp(d):
+                            conf, box = d
+                            x1, y1, x2, y2 = box
+                            cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+                            return conf - λ * ((cx - cx_mid) ** 2 + (cy - cy_mid) ** 2) ** 0.5 / d_max
+                        _, box = max(atks, key=score_sp)
+                    else:
+                        _, box = atks[0]
+
+                    x1, y1, x2, y2 = box
+                    click_abs(
+                        win_x0 + int(((x1 + x2) // 2) * SX),
+                        win_y0 + int(((y1 + y2) // 2) * SY)
+                    )
+                    current_timeout = TIME_LONG
+                    last_event      = time.time()
+
+                # ---- normal attacks (F3 + click) ---------------------
                 elif atks and not sitting:
                     if len(atks)>1:
                         def score(d):
@@ -241,20 +263,6 @@ def main():
                     x1,y1,x2,y2=box
                     attack_target(win_x0+int(((x1+x2)//2)*SX),
                                   win_y0+int(((y1+y2)//2)*SY))
-
-                # ---- SP critical: same as normal, but ONLY click (no F3) ----
-                elif sp_crit and atks and not sitting:
-                    # choose nearest/strongest same as above
-                    if len(atks)>1:
-                        def score2(d):
-                            conf,box=d; x1,y1,x2,y2=box; cx,cy=(x1+x2)/2,(y1+y2)/2
-                            return conf-λ*((cx-cx_mid)**2+(cy-cy_mid)**2)**0.5/d_max
-                        _,box=max(atks,key=score2)
-                    else: _,box=atks[0]
-                    x1,y1,x2,y2=box
-                    click_abs(win_x0+int(((x1+x2)//2)*SX),
-                              win_y0+int(((y1+y2)//2)*SY))
-                    current_timeout=TIME_LONG; last_event=time.time()
 
                 # timeout teleport
                 if time.time()-last_event > current_timeout: do_f2()

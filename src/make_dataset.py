@@ -4,8 +4,8 @@ from pathlib import Path
 from PIL import Image
 
 OUT_W, OUT_H = 1280, 720
-N_IMAGES = 800     # total
-TRAIN_SPLIT = 0.8
+N_IMAGES = 200     # total
+TRAIN_SPLIT = 1
 
 random.seed(42)
 bg_list = glob.glob("../ragnarok-dataset/backgrounds/*")
@@ -19,7 +19,7 @@ for sub in ("../ragnarok-dataset/images/train", "../ragnarok-dataset/images/val"
 
 def place_sprite(bg_img, sp_img):
     bg = bg_img.convert("RGBA").resize((OUT_W, OUT_H))
-    scale = random.uniform(0.6, 1.1)
+    scale = random.uniform(0.8, 1.3)
     sp = sp_img.resize((int(sp_img.width*scale), int(sp_img.height*scale)), Image.LANCZOS).convert("RGBA")
     max_x, max_y = OUT_W - sp.width, OUT_H - sp.height
     x0, y0 = random.randint(0, max_x), random.randint(0, max_y)
@@ -38,9 +38,9 @@ for idx in range(N_IMAGES):
     split = "train" if random.random() < TRAIN_SPLIT else "val"
     img_name = f"synt_{idx:05}.jpg"
     lbl_name = img_name.replace(".jpg", ".txt")
-
+    ind = 4
     img.save(f"../ragnarok-dataset/images/{split}/{img_name}", quality=90)
     with open(f"../ragnarok-dataset/labels/{split}/{lbl_name}", "w") as f:
-        f.write(f"{class2idx[cls_name]} {cx:.6f} {cy:.6f} {w:.6f} {h:.6f}\n")
+        f.write(f"{ind} {cx:.6f} {cy:.6f} {w:.6f} {h:.6f}\n")
 
 print("✅ Dataset multi-classe gerado com", len(class_dirs), "classes.")
